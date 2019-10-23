@@ -11,7 +11,7 @@
 #include <math.h>
 #include "timer.h"  //para usar funcoes de medida de tempo
 
-double erro;                //variavel de erro
+float erro;                //variavel de erro
 
 /*
  * Funcao cuja integral sera calculada
@@ -35,18 +35,24 @@ float f(float x) {
  * Saida: Resultado da integracao
  */
 
-float CalculaIntegral(double x1, double x2) {
+float CalculaIntegral(float x1, float x2) {
   float m, base, dif;
   float area[3];
 
   m = (x1 + x2)/2;
-  base = (x2 - x1)/3;
+  base = (x2 - x1)/2;
+
+  //printf("%f  medio\n %f  base\n\n\n", m, base);
   
-  area[0] = base*f(m);
-  area[1] = base*f(m-base);
+  area[0] = base*f(m-base);
+  area[1] = base*f(m);
   area[2] = base*f(m+base);
 
-  dif = area[2] - (area[0] + area[1]);
+  //printf("%f  area0\n%f  area1\n%f  area2\n\n\n", area[0], area[1], area[2]);
+
+  dif = abs(area[2] - (area[0] + area[1]));
+
+  //printf("%f  dif\n\n\n", dif);
 
   if(dif <= erro)
     return area[2];
@@ -60,8 +66,8 @@ float CalculaIntegral(double x1, double x2) {
 //funcao principal
 int main(int argc, char *argv[]) {
   double inicio, fim, delta;  //variaveis para medir o tempo de execucao
-  double a, b;                //variaveis de intervalo
-  double resultadoFinal;      //variavel para resultado da integracao
+  float a, b;                //variaveis de intervalo
+  float resultadoFinal;      //variavel para resultado da integracao
 
   //le e valida os parametros de entrada
   if(argc < 4) {
