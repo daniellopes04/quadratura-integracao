@@ -46,9 +46,9 @@ double inicio, fim;
   funcaoEmEsquerda = func(valorMedioEsquerda); //calcula a função avaliada no ponto medio entre A e C
   funcaoEmDireita = func(valorMedioDireita); //calcula a função avaliada no ponto medio entre C e B
 
-  integralEsquerda = ( dist / 12 ) * (funcEmA + 4 * funcaoEmEsquerda + funcEmMedio); //calcula a integral da parte da esquerda (de A até C)
+  integralEsquerda = ( dist / 2 ) * funcaoEmEsquerda; //calcula a integral da parte da esquerda (de A até C)
 
-  integralDireita = ( dist / 12 ) * (funcEmMedio + 4 * funcaoEmDireita + funcEmB); //calcula a integral da parte da direita (de C até B)
+  integralDireita = ( dist / 2 ) * funcaoEmDireita; //calcula a integral da parte da direita (de C até B)
   
   novaIntegralSimpson = integralEsquerda + integralDireita;                                                                       
   
@@ -81,7 +81,7 @@ double simpsonInicial(double (*func) (double), double limiteA, double limiteB, d
   funcEmMedio = func(valorMedio); //função no ponto médio                                           printf("Resultado para a função 1 = %f\n", simpsonInicial(func1, a, b, maxError));
 
   
-  integralSimp = (dist / 6) * (funcEmA + 4 * funcEmMedio + funcEmB); //utilizando a regra de simpson, calcula-se uma aproximação para a integral                                                            
+  integralSimp = dist * funcEmMedio; //utilizando a regra de simpson, calcula-se uma aproximação para a integral                                                            
   
   return simpsonRecursiva(func, limiteA, limiteB, erro, integralSimp, funcEmA, funcEmB, funcEmMedio); 
 
