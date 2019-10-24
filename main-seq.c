@@ -14,7 +14,7 @@
 double erro, resultado;
 double inicio, fim;
 
-
+//funcoes cujas integrais serao calculadas
 double func1(double x){ return 1 + x; }
 double func2(double x){ return sqrt(1 - pow(x, 2)); }
 double func3(double x){ return sqrt(1 + pow(x, 4)); }
@@ -23,6 +23,7 @@ double func5(double x){ return cos(exp(-x)); }
 double func6(double x){ return cos(exp(-x)) * x;}
 double func7(double x){ return cos(exp(-x)) * ((0.005 * pow(x, 3)) + 1); }
 
+//funcao recursiva para aproximacao do valor da integral
 double retangulosRecursiva(double (*func)( double), double limiteA, double limiteB, double erro, double integral, double funcEmA, double funcEmB, double funcEmMedio) {
 
   double valorMedio;                              //variavel para guardar o ponto médio no intervalo [A, B]
@@ -32,18 +33,17 @@ double retangulosRecursiva(double (*func)( double), double limiteA, double limit
   double integralEsquerda, integralDireita;       //variáveis para calcular a integral no lado esquerdo e direito do intervalo [A, C] e [C, B] pelo método dos retangulos
   double novaIntegral;                            //variável que guarda a nova aproximação da integral da parte dividida;
 
-  valorMedio = (limiteA + limiteB) / 2; //calcula o ponto médio entre A e B
-  dist = limiteB - limiteA; //calcula a distancia entre A e B
+  valorMedio = (limiteA + limiteB) / 2;           //calcula o ponto médio entre A e B
+  dist = limiteB - limiteA;                       //calcula a distancia entre A e B
 
-  valorMedioEsquerda = (limiteA + valorMedio) / 2;  //calcula o ponto médio entre A e C
-  valorMedioDireita = (valorMedio + limiteB) / 2;   //calcula o ponto médio entre C e B
+  valorMedioEsquerda = (limiteA + valorMedio) / 2;    //calcula o ponto médio entre A e C
+  valorMedioDireita = (valorMedio + limiteB) / 2;     //calcula o ponto médio entre C e B
 
-  funcaoEmEsquerda = func(valorMedioEsquerda);  //calcula a função avaliada no ponto medio entre A e C
-  funcaoEmDireita = func(valorMedioDireita);    //calcula a função avaliada no ponto medio entre C e B
+  funcaoEmEsquerda = func(valorMedioEsquerda);        //calcula a função avaliada no ponto medio entre A e C
+  funcaoEmDireita = func(valorMedioDireita);          //calcula a função avaliada no ponto medio entre C e B
 
   integralEsquerda = ( dist / 2 ) * funcaoEmEsquerda; //calcula a integral da parte da esquerda (de A até C)
-
-  integralDireita = ( dist / 2 ) * funcaoEmDireita; //calcula a integral da parte da direita (de C até B)
+  integralDireita = ( dist / 2 ) * funcaoEmDireita;   //calcula a integral da parte da direita (de C até B)
   
   novaIntegral = integralEsquerda + integralDireita;                                                                       
   
@@ -58,27 +58,25 @@ double retangulosRecursiva(double (*func)( double), double limiteA, double limit
   
   return retangulosRecursiva(func, limiteA, valorMedio, erro/2, integralEsquerda,  funcEmA, funcEmMedio, funcaoEmEsquerda) +                    
          retangulosRecursiva(func, valorMedio, limiteB, erro/2, integralDireita, funcEmMedio, funcEmB, funcaoEmDireita);
+
 }
 
+//funcao que inicializa o calculo da integral e chama a funcao recursiva
 double retangulosInicial(double (*func) (double), double limiteA, double limiteB, double erro) {  
 
   double valorMedio;                      //variável que vai armazenar o ponto médio entre os intervalos A e B
   double dist;                            //variável que vai armazenar a distancia entre o intervalo A e B
   double funcEmA, funcEmB, funcEmMedio;   //variáveis que vão armazenas os valores da função calculada nos pontos A, B e ponto Médio
-  double integral;                        //variável que vai armazenar o valor da aproximação da integral da função avaliada pelo método de simpson
+  double integral;                        //variável que vai armazenar o valor da aproximação da integral da função avaliada pelo método dos retangulos
 
-  valorMedio = (limiteA + limiteB)/2; //ponto médio entre A e B
-
-  dist = limiteB - limiteA; //distancia entre A e B                                    
+  valorMedio = (limiteA + limiteB)/2;     //ponto médio entre A e B
+  dist = limiteB - limiteA;               //distancia entre A e B                                    
   
   funcEmA = func(limiteA);          //função no ponto A
   funcEmB = func(limiteB);          //função no ponto B
   funcEmMedio = func(valorMedio);   //função no ponto médio
-  
-  //printf("Resultado para a função 1 = %f\n", retangulosInicial(func1, a, b, maxError));
 
-  
-  integral = dist * funcEmMedio; //utilizando a regra dos retangulos, calcula-se uma aproximação para a integral                                                            
+  integral = dist * funcEmMedio;    //utilizando a regra dos retangulos, calcula-se uma aproximação para a integral                                                            
   
   return retangulosRecursiva(func, limiteA, limiteB, erro, integral, funcEmA, funcEmB, funcEmMedio); 
 
@@ -86,9 +84,9 @@ double retangulosInicial(double (*func) (double), double limiteA, double limiteB
 
 //funcao principal
 int main(int argc, char *argv[]) {
-  double delta, maxError; //variaveis para medir o tempo de execucao
-  int a, b;
-  double inicio, fim;
+  double delta, inicio, fim;    //variaveis para medir o tempo de execucao
+  int a, b;                     //variaveis do intervalo de integracao
+  double maxError;              //variavel de erro maximo da aproximacao
 
   //le e valida os parametros de entrada
   if(argc < 4) {
@@ -99,7 +97,6 @@ int main(int argc, char *argv[]) {
   a = atoi(argv[1]);
   b = atoi(argv[2]);
   maxError = atof(argv[3]);
-
 
   //-----------------------------------------------------------------------------------
 
@@ -114,6 +111,8 @@ int main(int argc, char *argv[]) {
   printf("Resultado para a função 7 = %f\n", retangulosInicial(func7, a, b, maxError));
 
   GET_TIME(fim);
+
+  //-----------------------------------------------------------------------------------
 
   //calcula e exibe o tempo gasto com a multiplicacao  
   delta = fim - inicio;
