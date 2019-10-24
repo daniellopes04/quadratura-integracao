@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
   //-----------------------------------------------------------------------------------
 
-  //calcula e exibe o tempo gasto com a multiplicacao  
+  //calcula e exibe o tempo gasto com a multiplicacao
   delta = fim - inicio;
   
   printf("Tempo de calculo da integral: %.8lf\n", delta);
