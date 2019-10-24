@@ -89,8 +89,9 @@ double simpsonInicial(double (*func) (double), double limiteA, double limiteB, d
 
 //funcao principal
 int main(int argc, char *argv[]) {
-  double delta, result, maxError; //variaveis para medir o tempo de execucao
+  double delta, maxError; //variaveis para medir o tempo de execucao
   int a, b;
+  double inicio, fim;
 
   //le e valida os parametros de entrada
   if(argc < 4) {
@@ -105,6 +106,8 @@ int main(int argc, char *argv[]) {
 
   //-----------------------------------------------------------------------------------
 
+  GET_TIME(inicio);
+
   printf("Resultado para a função 1 = %f\n", simpsonInicial(func1, a, b, maxError));
   if (a >= -1 && b <= 1) printf("Resultado para a função 2 = %f\n", simpsonInicial(func2, a, b, maxError));
   printf("Resultado para a função 3 = %f\n", simpsonInicial(func3, a, b, maxError));
@@ -113,6 +116,9 @@ int main(int argc, char *argv[]) {
   printf("Resultado para a função 6 = %f\n", simpsonInicial(func6, a, b, maxError));
   printf("Resultado para a função 7 = %f\n", simpsonInicial(func7, a, b, maxError));
 
+  GET_TIME(fim);
+
+  delta = fim - inicio;
 
   //exibe os resultados da soma
 
