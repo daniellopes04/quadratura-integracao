@@ -10,10 +10,6 @@
 #include <math.h>
 #include "timer.h"  //para usar funcoes de medida de tempo
 
-
-double erro, resultado;
-double inicio, fim;
-
 //funcoes cujas integrais serao calculadas
 double func1(double x){ return 1 + x; }
 double func2(double x){ return sqrt(1 - pow(x, 2)); }
