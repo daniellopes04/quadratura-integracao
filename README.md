@@ -6,5 +6,4 @@ Trabalho de desenvolvimento C para a disciplina de Computação Concorrente do c
 
 ```
 gcc main-seq.c -o main-seq -lpthread -Wall -lm
-
 ```
