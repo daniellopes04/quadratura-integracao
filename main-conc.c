@@ -134,7 +134,6 @@ void retangulosInicial(double (*func) (double), double limiteA, double limiteB, 
   pthread_mutex_unlock(&mutex);
 }
 
-
 //funcao principal
 int main(int argc, char *argv[]) {
   
@@ -147,7 +146,6 @@ int main(int argc, char *argv[]) {
 
   pthread_mutex_init(&mutex, NULL);
   pthread_cond_init(&cond, NULL);
-
   
   if(argc < 5) {
 
@@ -175,7 +173,11 @@ int main(int argc, char *argv[]) {
     if(tid_sistema==NULL) { printf("--ERRO: malloc()\n"); exit(-1); }
 
     if(h == 0) { retangulosInicial(func1, limiteA, limiteB, erro); }
-    if(h == 1) { retangulosInicial(func2, limiteA, limiteB, erro); }
+    if(h == 1) { 
+      if (limiteA >= -1 && limiteB <= 1){
+        retangulosInicial(func2, limiteA, limiteB, erro);
+      }
+    }
     if(h == 2) { retangulosInicial(func3, limiteA, limiteB, erro); }
     if(h == 3) { retangulosInicial(func4, limiteA, limiteB, erro); }
     if(h == 4) { retangulosInicial(func5, limiteA, limiteB, erro); }
@@ -225,8 +227,13 @@ int main(int argc, char *argv[]) {
       printf("thread %d : %d\n", t, iteracoes[t]);
     }
 
-    printf("Valor da integral: %.8lf\n", finalResult);
-    printf("Tempo = %lf\n\n", delta);
+    if(h == 2 && limiteA <= -1 && limiteB >= 1) {
+      printf("Funcao fora do intervalo -1 < x < 1");
+    }
+    else {
+      printf("Valor da integral: %.8lf\n", finalResult);
+      printf("Tempo = %lf\n\n", delta);
+    }
 
     free(tid_sistema);
     finalResult = 0;
