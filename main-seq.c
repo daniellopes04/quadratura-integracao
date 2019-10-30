@@ -44,7 +44,12 @@ double retangulosRecursiva(double (*func)( double), double limiteA, double limit
   
   novaIntegral = integralEsquerda + integralDireita;                                                                       
   
-  if (fabs(novaIntegral - integral) <= 15 * erro) { 
+  if (fabs(novaIntegral - integral) <= 15 * erro) {  //Calculo do método da quadratura adaptiva para saber se o novo valor da integral satisfaz o 
+                                              //erro determinado no inicio do problema, caso satisfaça, esse valor é usado para servir como
+                                              //aproximação do valor da integral da função, caso contratário, é chamado mais duas instancias
+                                              //da função recursiva, onde irão separar o lado esquerdo e o lado direito e fazer o mesmo processo,
+                                              //dividindo em esses lados em 2 novos lados até que o erro minimo seja satisfeito, fazendo assim uma
+                                              //série de recursões e divindo cada vez mais a integral em pequenos retangulos nas partes mais cŕticias
     return novaIntegral + (novaIntegral - integral) / 15;
   }                                              
   
@@ -77,7 +82,7 @@ double retangulosInicial(double (*func) (double), double limiteA, double limiteB
 //funcao principal
 int main(int argc, char *argv[]) {
   double delta, inicio, fim;    //variaveis para medir o tempo de execucao
-  int a, b;                     //variaveis do intervalo de integracao
+  int limiteA, limiteB;         //variaveis do intervalo de integracao
   double maxError;              //variavel de erro maximo da aproximacao
 
   //le e valida os parametros de entrada
@@ -86,15 +91,15 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  a = atoi(argv[1]);
-  b = atoi(argv[2]);
+  limiteA = atof(argv[1]);
+  limiteB = atof(argv[2]);
   maxError = atof(argv[3]);
 
   //executa todas as funcoes calculando o tempo de execucao de cada uma
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 1 = %f\n", retangulosInicial(func1, a, b, maxError));
+  printf("Resultado para a função 1 = %f\n", retangulosInicial(func1, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -105,50 +110,29 @@ int main(int argc, char *argv[]) {
   
 
   //-----------------------------------------------------------------------------------
-  GET_TIME(inicio);
 
-  if (a >= -1 && b <= 1) printf("Resultado para a função 2 = %f\n", retangulosInicial(func2, a, b, maxError));
+  if (limiteA >= -1 && limiteB <= 1){
+    GET_TIME(inicio);
 
-  GET_TIME(fim);
+    printf("Resultado para a função 2 = %f\n", retangulosInicial(func2, limiteA, limiteB, maxError));
+    
+    GET_TIME(fim);
 
-  //calcula e exibe o tempo gasto com a multiplicacao
-  delta = fim - inicio;
-  printf("Tempo de calculo da integral: %.8lf\n\n", delta);
+    //calcula e exibe o tempo gasto com a multiplicacao
+    delta = fim - inicio;
+    printf("Tempo de calculo da integral: %.8lf\n\n", delta);
+  }
+  else
+  {
+    printf("Funcao 2 fora do intervalo!\n\n");
+  }
   //-----------------------------------------------------------------------------------
 
 
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 3 = %f\n", retangulosInicial(func3, a, b, maxError));
-
-  GET_TIME(fim);
-
-  //calcula e exibe o tempo gasto com a multiplicacao
-  delta = fim - inicio;
-  printf("Tempo de calculo da integral: %.8lf\n\n", delta);
-  //-----------------------------------------------------------------------------------
-
-
-  //-----------------------------------------------------------------------------------
-
-  GET_TIME(inicio);
-
-  printf("Resultado para a função 4 = %f\n", retangulosInicial(func4, a, b, maxError));
-
-  GET_TIME(fim);
-
-  //calcula e exibe o tempo gasto com a multiplicacao
-  delta = fim - inicio;
-  printf("Tempo de calculo da integral: %.8lf\n\n", delta);
-  //-----------------------------------------------------------------------------------
-
-
-  //-----------------------------------------------------------------------------------
-
-  GET_TIME(inicio);
-
-  printf("Resultado para a função 5 = %f\n", retangulosInicial(func5, a, b, maxError));
+  printf("Resultado para a função 3 = %f\n", retangulosInicial(func3, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -162,7 +146,35 @@ int main(int argc, char *argv[]) {
 
   GET_TIME(inicio);
 
-  printf("Resultado para a função 6 = %f\n", retangulosInicial(func6, a, b, maxError));
+  printf("Resultado para a função 4 = %f\n", retangulosInicial(func4, limiteA, limiteB, maxError));
+
+  GET_TIME(fim);
+
+  //calcula e exibe o tempo gasto com a multiplicacao
+  delta = fim - inicio;
+  printf("Tempo de calculo da integral: %.8lf\n\n", delta);
+  //-----------------------------------------------------------------------------------
+
+
+  //-----------------------------------------------------------------------------------
+
+  GET_TIME(inicio);
+
+  printf("Resultado para a função 5 = %f\n", retangulosInicial(func5, limiteA, limiteB, maxError));
+
+  GET_TIME(fim);
+
+  //calcula e exibe o tempo gasto com a multiplicacao
+  delta = fim - inicio;
+  printf("Tempo de calculo da integral: %.8lf\n\n", delta);
+  //-----------------------------------------------------------------------------------
+
+
+  //-----------------------------------------------------------------------------------
+
+  GET_TIME(inicio);
+
+  printf("Resultado para a função 6 = %f\n", retangulosInicial(func6, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -175,7 +187,7 @@ int main(int argc, char *argv[]) {
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 7 = %f\n", retangulosInicial(func7, a, b, maxError));
+  printf("Resultado para a função 7 = %f\n", retangulosInicial(func7, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
