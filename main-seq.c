@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 1 = %f\n", retangulosInicial(func1, limiteA, limiteB, maxError));
+  printf("Resultado para a função 1 = %.8f\n", retangulosInicial(func1, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
   if (limiteA >= -1 && limiteB <= 1){
     GET_TIME(inicio);
 
-    printf("Resultado para a função 2 = %f\n", retangulosInicial(func2, limiteA, limiteB, maxError));
+    printf("Resultado para a função 2 = %.8f\n", retangulosInicial(func2, limiteA, limiteB, maxError));
     
     GET_TIME(fim);
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 3 = %f\n", retangulosInicial(func3, limiteA, limiteB, maxError));
+  printf("Resultado para a função 3 = %.8f\n", retangulosInicial(func3, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
   GET_TIME(inicio);
 
-  printf("Resultado para a função 4 = %f\n", retangulosInicial(func4, limiteA, limiteB, maxError));
+  printf("Resultado para a função 4 = %.8f\n", retangulosInicial(func4, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
 
   GET_TIME(inicio);
 
-  printf("Resultado para a função 5 = %f\n", retangulosInicial(func5, limiteA, limiteB, maxError));
+  printf("Resultado para a função 5 = %.8f\n", retangulosInicial(func5, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 
   GET_TIME(inicio);
 
-  printf("Resultado para a função 6 = %f\n", retangulosInicial(func6, limiteA, limiteB, maxError));
+  printf("Resultado para a função 6 = %.8f\n", retangulosInicial(func6, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
   //-----------------------------------------------------------------------------------
   GET_TIME(inicio);
 
-  printf("Resultado para a função 7 = %f\n", retangulosInicial(func7, limiteA, limiteB, maxError));
+  printf("Resultado para a função 7 = %.8f\n", retangulosInicial(func7, limiteA, limiteB, maxError));
 
   GET_TIME(fim);
 
