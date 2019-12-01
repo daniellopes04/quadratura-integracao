@@ -34,9 +34,9 @@ void barreira(){
 
 }
 
-void Escrita(int idThreadEscritoria){
+void Escrita(int idThreadEscritora){
   
-  recurso = idThreadEscritoria;
+  recurso = idThreadEscritora;
 
 }
 
