@@ -9,22 +9,33 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <string.h>
 
 int nDeEscritas, nDeLeituras;
 int leiturasFeitas = 0, escritasFeitas = 0;
-int leitores = 0, escritores = 0, querEscrever = -1, ativou = 0;
+int nThreadsEscritoras, nThreadsLeitoras;
+int leitores = 0, escritores = 0;
 int recurso = -1;
-sem_t em;
-pthread_mutex_t mutex_l, mutex_e;
-pthread_cond_t cond, cond2;
+pthread_mutex_t readerMutex;
+sem_t em, fila;
 
-void Escrita(){
-  print("escreveu\n");
+FILE ** files;
+FILE * logger;
+
+void barreira(){
+
 }
 
-int Leitura(){
+void Escrita(int idThreadEscritoria){
+  
+  recurso = idThreadEscritoria;
 
-  printf("leu\n");
+}
+
+int Leitura(int idThreadLeitora){
+
+  fprintf(files[idThreadLeitora - nThreadsEscritoras], "Thread %d leu o valor %d\n", idThreadLeitora, recurso);
+
   return 0;
 
 }
@@ -32,23 +43,19 @@ int Leitura(){
 void * threadEscritora(void * id){
 
   int * tid = (int * ) id;
-  int i = 0;
+  printf("Thread %d inicializou\n", *tid);
 
-  while(escritasFeitas < nDeEscritas){
+  while(escritasFeitas < nDeEscritas){;
 
-    pthread_mutex_lock(&mutex_e);
-    querEscrever = tid;
+    sem_wait(&fila);
     sem_wait(&em);
-    if(leitores > 0) { pthread_cond_wait(&cond2, &mutex_e); }
+    sem_post(&fila);
 
-    Escrita(tid);
+    Escrita(*tid);
 
-    querEscrever = -1;
-    pthread_cond_broadcast(&cond);
-    pthread_mutex_lock(&mutex_l);
-    ativou = 0;
-    pthread_mutex_unlock(&mutex_l);
-    pthread_mutex_unlock(&mutex_e);
+    escritasFeitas++;
+
+    sem_post(&em);
 
   }
 
@@ -60,21 +67,23 @@ void * threadEscritora(void * id){
 void * threadLeitora(void * id){
 
   int * tid = (int * ) id;
-  int i = 0;
 
   while(leiturasFeitas < nDeLeituras){
 
-    pthread_mutex_lock(&mutex_l);
-    if(querEscrever > 0){ if(ativou == 0) { sem_post(&em); ativou = 1; } pthread_cond_wait(&cond, &mutex_l); }
+    sem_wait(&fila);
+    pthread_mutex_lock(&readerMutex);
+    if(leitores == 0){ sem_wait(&em); }
     leitores++;
-    pthread_mutex_unlock(&mutex_l);
+    sem_post(&fila);
+    pthread_mutex_unlock(&readerMutex);
 
-    Leitura(tid);
+    Leitura(*tid);
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&readerMutex);
     leitores--;
-    if(querEscrever > 0 && leitores == 0){ pthread_cond_signal(&cond2); }
-    pthread_mutex_unlock(&mutex_l);
+    leiturasFeitas++;
+    if(leitores == 0) { sem_post(&em); }
+    pthread_mutex_unlock(&readerMutex);
 
   }
 
@@ -87,26 +96,28 @@ void * threadLeitora(void * id){
 //funcao principal
 int main(int argc, char *argv[]) {
 
-  int nThreadsEscritoras, nThreadsLeitoras, i;
+  int i;
   int * idThread;
   char * nomeDoArquivo;
   pthread_t * tid;
-
-  sem_init(&em, 0, 1);
-  pthread_mutex_init(&mutex_l, NULL);
-  pthread_mutex_init(&mutex_e, NULL);
-  pthread_cond_init(&cond, NULL);
-  pthread_cond_init(&cond2, NULL);
-
+  
   if(argc < 6) { 
     printf("%s numeroThreadsLeitoras numeroThreadsEscritoras numeroLeituras numeroEscritas Log", argv[0]); exit(-1); 
   }
+
+  pthread_mutex_init(&readerMutex, NULL);
+  sem_init(&em, 0, 1);
+  sem_init(&fila, 0, 1);
 
   nThreadsLeitoras = atoi(argv[1]);
   nThreadsEscritoras = atoi(argv[2]);
   nDeLeituras = atoi(argv[3]);
   nDeEscritas = atoi(argv[4]);
   nomeDoArquivo = argv[5];
+
+  files = malloc (sizeof(FILE *) * nThreadsLeitoras);
+  
+  logger = fopen(nomeDoArquivo, "w");
 
   tid = (pthread_t *) malloc (sizeof(pthread_t) * (nThreadsEscritoras + nThreadsLeitoras));
 
@@ -122,9 +133,15 @@ int main(int argc, char *argv[]) {
 
   for(i = nThreadsEscritoras ; i < (nThreadsLeitoras + nThreadsEscritoras) ; i++){
 
+    char string[10];
+
     idThread = malloc(sizeof(int));
     if(idThread == NULL) { printf("falha na alocação de memória\n"); exit(-1); }
     *idThread = i;
+
+    sprintf(string, "%d.txt", i);
+    
+    files[i - nThreadsEscritoras] = fopen(string, "w");
 
     if(pthread_create(&tid[i], NULL, threadLeitora, (void *) idThread)) { printf("erro ao criar thread\n"); exit(-1); }
 
