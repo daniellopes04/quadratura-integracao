@@ -16,13 +16,21 @@ int leiturasFeitas = 0, escritasFeitas = 0;
 int nThreadsEscritoras, nThreadsLeitoras;
 int leitores = 0, escritores = 0;
 int recurso = -1;
-pthread_mutex_t readerMutex;
+int threads = 0;
+pthread_mutex_t readerMutex, barrierMutex;
+pthread_cond_t cond;
 sem_t em, fila;
 
 FILE ** files;
 FILE * logger;
 
 void barreira(){
+
+  pthread_mutex_lock(&barrierMutex);
+  threads++;
+  if (threads < (nThreadsEscritoras + nThreadsLeitoras)) { pthread_cond_wait(&cond, &barrierMutex); }
+  else { pthread_cond_broadcast(&cond); }
+  pthread_mutex_unlock(&barrierMutex);
 
 }
 
@@ -43,7 +51,7 @@ int Leitura(int idThreadLeitora){
 void * threadEscritora(void * id){
 
   int * tid = (int * ) id;
-  printf("Thread %d inicializou\n", *tid);
+  barreira();
 
   while(escritasFeitas < nDeEscritas){;
 
@@ -67,6 +75,7 @@ void * threadEscritora(void * id){
 void * threadLeitora(void * id){
 
   int * tid = (int * ) id;
+  barreira();
 
   while(leiturasFeitas < nDeLeituras){
 
@@ -106,6 +115,8 @@ int main(int argc, char *argv[]) {
   }
 
   pthread_mutex_init(&readerMutex, NULL);
+  pthread_mutex_init(&barrierMutex, NULL);
+  pthread_cond_init(&cond, NULL);
   sem_init(&em, 0, 1);
   sem_init(&fila, 0, 1);
 
@@ -117,6 +128,7 @@ int main(int argc, char *argv[]) {
 
   files = malloc (sizeof(FILE *) * nThreadsLeitoras);
   
+  strcat(nomeDoArquivo, ".txt");
   logger = fopen(nomeDoArquivo, "w");
 
   tid = (pthread_t *) malloc (sizeof(pthread_t) * (nThreadsEscritoras + nThreadsLeitoras));
