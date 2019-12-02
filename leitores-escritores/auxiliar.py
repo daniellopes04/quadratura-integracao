@@ -17,7 +17,7 @@ def iniciaVerificacao(nLeitores, nEscritores, leituras, escritas, arq):
     totalLeitores = nLeitores
     totalEscritores = nEscritores
     nThreads = nLeitores + nEscritores
-    arquivo = open(arq+".txt", "r")
+    arquivo = open(arq, "r")
 
     # Executa as linhas do arquivo
     for linha in arquivo:
@@ -89,4 +89,3 @@ def erro(t_id, tipoThread, codErro):
         print("Inanicao")
 
     sys.exit()
-

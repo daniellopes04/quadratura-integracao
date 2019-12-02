@@ -39,7 +39,7 @@ void Escrita(int idThreadEscritora){
   recurso = idThreadEscritora;
 
   //imprimindo no arquivo de log
-  fprintf(logger, "escrita(%d)", idThreadEscritora);
+  fprintf(logger, "escrita(%d)\n", idThreadEscritora);
 
 }
 
@@ -48,7 +48,7 @@ int Leitura(int idThreadLeitora){
   fprintf(files[idThreadLeitora - nThreadsEscritoras], "Thread %d leu o valor %d\n", idThreadLeitora, recurso);
   
   //imprimindo no arquivo de log
-  fprintf(logger, "leitura(%d, %d)", idThreadLeitora, recurso);
+  fprintf(logger, "leitura(%d, %d)\n", idThreadLeitora, recurso);
 
   return 0;
 
@@ -63,7 +63,7 @@ void * threadEscritora(void * id){
 
     sem_wait(&fila);
     sem_wait(&em);
-    fprintf(logger, "escritaBloqueada(%d)", id);
+    fprintf(logger, "escritaBloqueada(%d)\n", *tid);
     sem_post(&fila);
 
     Escrita(*tid);
@@ -88,7 +88,7 @@ void * threadLeitora(void * id){
 
     sem_wait(&fila);
     pthread_mutex_lock(&readerMutex);
-    fprintf(logger, "leituraBloqueada(%d)", id);
+    fprintf(logger, "leituraBloqueada(%d)\n", *tid);
     if(leitores == 0){ sem_wait(&em); }
     leitores++;
     sem_post(&fila);
@@ -116,6 +116,7 @@ int main(int argc, char *argv[]) {
   int * idThread;
   char * nomeDoArquivo;
   pthread_t * tid;
+  FILE * tempFile;
   
   if(argc < 6) { 
     printf("\nDigite: %s numeroThreadsLeitoras numeroThreadsEscritoras numeroLeituras numeroEscritas nomeArquivoLog\n\n", argv[0]); exit(-1); 
@@ -137,6 +138,9 @@ int main(int argc, char *argv[]) {
   
   strcat(nomeDoArquivo, ".txt");
   logger = fopen(nomeDoArquivo, "w");
+  tempFile = fopen("temp.txt", "w");
+
+  fprintf(tempFile, nomeDoArquivo);
 
   //printa no arquivo de log os parametros iniciais do programa passados na linha de comando
   fprintf(logger, "paramIniciais(%d, %d, %d, %d, %s)\n", nThreadsLeitoras, nThreadsEscritoras, nDeLeituras, nDeEscritas, nomeDoArquivo);
