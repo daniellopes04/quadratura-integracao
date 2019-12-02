@@ -84,11 +84,11 @@ def erro(t_id, tipoThread, codErro):
     sys.exit()
 
 # Executa as linhas do arquivo
-    for linha in arquivo:
-        linha
+for linha in arquivo:
+    linha
 
-    for i in range(0, nThreads):
-        if i not in threadsExecutadas:
-            erro(i, 0, 5)
+for i in range(0, nthreads):
+    if i not in threadsExecutadas:
+        erro(i, 0, 5)
 
-    print("Execucao finalizada sem erros!")
+print("\nExecucao finalizada sem erros!\n")
