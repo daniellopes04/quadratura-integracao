@@ -140,10 +140,10 @@ int main(int argc, char *argv[]) {
   logger = fopen(nomeDoArquivo, "w");
   tempFile = fopen("temp.txt", "w");
 
-  fprintf(tempFile, nomeDoArquivo);
+  fprintf(tempFile, "%s", nomeDoArquivo);
 
   //printa no arquivo de log os parametros iniciais do programa passados na linha de comando
-  fprintf(logger, "paramIniciais(%d, %d, %d, %d, %s)\n", nThreadsLeitoras, nThreadsEscritoras, nDeLeituras, nDeEscritas, nomeDoArquivo);
+  fprintf(logger, "iniciaVerificacao(%d, %d, %d, %d)\n", nThreadsLeitoras, nThreadsEscritoras, nDeLeituras, nDeEscritas);
 
   tid = (pthread_t *) malloc (sizeof(pthread_t) * (nThreadsEscritoras + nThreadsLeitoras));
 

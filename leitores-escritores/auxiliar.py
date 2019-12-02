@@ -3,31 +3,24 @@ import sys
 # variaveis globais
 nthreads = 0
 totalLeitores = 0
-totalEcritores = 0
+totalEscritores = 0
 leitores = 0
 escritores = 0
 recurso = -1
 
+arquivoAux = open("temp.txt", "r")
+arquivo = open(arquivoAux.readline(), "r")
+
 threadsExecutadas = []
 
-def iniciaVerificacao(nLeitores, nEscritores, leituras, escritas, arq):
+def iniciaVerificacao(nLeitores, nEscritores, leituras, escritas):
     global totalLeitores, totalEscritores
     global nThreads
 
     totalLeitores = nLeitores
     totalEscritores = nEscritores
     nThreads = nLeitores + nEscritores
-    arquivo = open(arq, "r")
 
-    # Executa as linhas do arquivo
-    for linha in arquivo:
-        linha
-
-    for i in range(0, nThreads):
-        if i not in threadsExecutadas:
-            erro(i, 0, 5)
-
-    print("Execucao finalizada sem erros!")
 
 def leitura(idThread, valorLido):
     global leitores, escritores
@@ -89,3 +82,13 @@ def erro(t_id, tipoThread, codErro):
         print("Inanicao")
 
     sys.exit()
+
+# Executa as linhas do arquivo
+    for linha in arquivo:
+        linha
+
+    for i in range(0, nThreads):
+        if i not in threadsExecutadas:
+            erro(i, 0, 5)
+
+    print("Execucao finalizada sem erros!")
