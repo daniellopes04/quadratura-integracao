@@ -38,11 +38,17 @@ void Escrita(int idThreadEscritora){
   
   recurso = idThreadEscritora;
 
+  //imprimindo no arquivo de log
+  fprintf(logger, "escrita(%d)", idThreadEscritora);
+
 }
 
 int Leitura(int idThreadLeitora){
 
   fprintf(files[idThreadLeitora - nThreadsEscritoras], "Thread %d leu o valor %d\n", idThreadLeitora, recurso);
+  
+  //imprimindo no arquivo de log
+  fprintf(logger, "leitura(%d, %d)", idThreadLeitora, recurso);
 
   return 0;
 
@@ -57,6 +63,7 @@ void * threadEscritora(void * id){
 
     sem_wait(&fila);
     sem_wait(&em);
+    fprintf(logger, "escritaBloqueada(%d)", id);
     sem_post(&fila);
 
     Escrita(*tid);
@@ -81,6 +88,7 @@ void * threadLeitora(void * id){
 
     sem_wait(&fila);
     pthread_mutex_lock(&readerMutex);
+    fprintf(logger, "leituraBloqueada(%d)", id);
     if(leitores == 0){ sem_wait(&em); }
     leitores++;
     sem_post(&fila);
@@ -101,7 +109,6 @@ void * threadLeitora(void * id){
 
 }
 
-
 //funcao principal
 int main(int argc, char *argv[]) {
 
@@ -111,7 +118,7 @@ int main(int argc, char *argv[]) {
   pthread_t * tid;
   
   if(argc < 6) { 
-    printf("%s numeroThreadsLeitoras numeroThreadsEscritoras numeroLeituras numeroEscritas Log", argv[0]); exit(-1); 
+    printf("\nDigite: %s numeroThreadsLeitoras numeroThreadsEscritoras numeroLeituras numeroEscritas nomeArquivoLog\n\n", argv[0]); exit(-1); 
   }
 
   pthread_mutex_init(&readerMutex, NULL);
@@ -131,15 +138,18 @@ int main(int argc, char *argv[]) {
   strcat(nomeDoArquivo, ".txt");
   logger = fopen(nomeDoArquivo, "w");
 
+  //printa no arquivo de log os parametros iniciais do programa passados na linha de comando
+  fprintf(logger, "paramIniciais(%d, %d, %d, %d, %s)\n", nThreadsLeitoras, nThreadsEscritoras, nDeLeituras, nDeEscritas, nomeDoArquivo);
+
   tid = (pthread_t *) malloc (sizeof(pthread_t) * (nThreadsEscritoras + nThreadsLeitoras));
 
   for(i = 0 ; i < nThreadsEscritoras ; i++){
     
     idThread = malloc(sizeof(int));
-    if(idThread == NULL) { printf("falha na alocação de memória\n"); exit(-1); }
+    if(idThread == NULL) { printf("\nErro: falha na alocação de memória\n\n"); exit(-1); }
     *idThread = i;
 
-    if(pthread_create(&tid[i], NULL, threadEscritora, (void *) idThread)) { printf("erro ao criar thread\n"); exit(-1); }
+    if(pthread_create(&tid[i], NULL, threadEscritora, (void *) idThread)) { printf("\nErro: falha ao criar thread\n\n"); exit(-1); }
 
   }
 
@@ -148,14 +158,14 @@ int main(int argc, char *argv[]) {
     char string[10];
 
     idThread = malloc(sizeof(int));
-    if(idThread == NULL) { printf("falha na alocação de memória\n"); exit(-1); }
+    if(idThread == NULL) { printf("\nErro: falha na alocação de memória\n\n"); exit(-1); }
     *idThread = i;
 
     sprintf(string, "%d.txt", i);
     
     files[i - nThreadsEscritoras] = fopen(string, "w");
 
-    if(pthread_create(&tid[i], NULL, threadLeitora, (void *) idThread)) { printf("erro ao criar thread\n"); exit(-1); }
+    if(pthread_create(&tid[i], NULL, threadLeitora, (void *) idThread)) { printf("\nErro: falha ao criar thread\n\n"); exit(-1); }
 
   }
 
@@ -163,7 +173,7 @@ int main(int argc, char *argv[]) {
     pthread_join(tid[i], NULL);
   }
 
-  printf("Fim da Thread Principal\n");
+  printf("\nFim da Thread Principal\n\n");
   free(tid);
 
   return 0;
