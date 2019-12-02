@@ -15,6 +15,7 @@ int nDeEscritas, nDeLeituras;
 int leiturasFeitas = 0, escritasFeitas = 0;
 int nThreadsEscritoras, nThreadsLeitoras;
 int leitores = 0, escritores = 0;
+int leitor = -1, escritor = -1;
 int recurso = -1;
 int threads = 0;
 pthread_mutex_t readerMutex, barrierMutex;
@@ -38,17 +39,11 @@ void Escrita(int idThreadEscritora){
   
   recurso = idThreadEscritora;
 
-  //imprimindo no arquivo de log
-  fprintf(logger, "escrita(%d)\n", idThreadEscritora);
-
 }
 
 int Leitura(int idThreadLeitora){
 
   fprintf(files[idThreadLeitora - nThreadsEscritoras], "Thread %d leu o valor %d\n", idThreadLeitora, recurso);
-  
-  //imprimindo no arquivo de log
-  fprintf(logger, "leitura(%d, %d)\n", idThreadLeitora, recurso);
 
   return 0;
 
@@ -63,12 +58,15 @@ void * threadEscritora(void * id){
 
     sem_wait(&fila);
     sem_wait(&em);
-    fprintf(logger, "escritaBloqueada(%d)\n", *tid);
+    escritor = *tid;
+    if(leitores > 0) { fprintf(logger, "leituraBloqueada(%d)\n", leitor); }
+    fprintf(logger, "entraEscrita(%d)\n", *tid);
     sem_post(&fila);
 
     Escrita(*tid);
 
     escritasFeitas++;
+    fprintf(logger, "saiEscrita(%d)\n", *tid);
 
     sem_post(&em);
 
@@ -88,8 +86,10 @@ void * threadLeitora(void * id){
 
     sem_wait(&fila);
     pthread_mutex_lock(&readerMutex);
-    fprintf(logger, "leituraBloqueada(%d)\n", *tid);
     if(leitores == 0){ sem_wait(&em); }
+    leitor = *tid;
+    if(escritores > 0) { fprintf(logger, "escritaBloqueada(%d)\n", escritor); }
+    fprintf(logger, "entraLeitura(%d)\n", *tid);
     leitores++;
     sem_post(&fila);
     pthread_mutex_unlock(&readerMutex);
@@ -99,6 +99,7 @@ void * threadLeitora(void * id){
     pthread_mutex_lock(&readerMutex);
     leitores--;
     leiturasFeitas++;
+    fprintf(logger, "saiLeitura(%d, %d)\n", *tid, recurso);
     if(leitores == 0) { sem_post(&em); }
     pthread_mutex_unlock(&readerMutex);
 

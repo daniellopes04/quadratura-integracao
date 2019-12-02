@@ -1,7 +1,7 @@
 import sys
 
 # variaveis globais
-nthreads = 0
+nThreads = 0
 totalLeitores = 0
 totalEscritores = 0
 leitores = 0
@@ -22,23 +22,26 @@ def iniciaVerificacao(nLeitores, nEscritores, leituras, escritas):
     nThreads = nLeitores + nEscritores
 
 
-def leitura(idThread, valorLido):
+def entraLeitura(idThread):
     global leitores, escritores
-    
     leitores += 1
 
     if(escritores > 0):
         erro(idThread, 1, 2)
 
-    if idThread not in threadsExecutadas:
-        threadsExecutadas.append(idThread)
+def saiLeitura (idThread, valorLido):
+    global leitores
+
+    if(recurso != valorLido):
+        erro(idThread, 1, 5)
 
     leitores -= 1
 
+    if idThread not in threadsExecutadas:
+        threadsExecutadas.append(idThread)
 
-def escrita(idThread):
+def entraEscrita(idThread):
     global leitores, escritores
-    
     escritores += 1
 
     if(escritores > 1):
@@ -47,10 +50,14 @@ def escrita(idThread):
     if(leitores > 0):
         erro(idThread, 2, 2)
 
+def saiEscrita(idThread):
+    global escritores, recurso
+
+    recurso = idThread
+    escritores -= 1
+
     if idThread not in threadsExecutadas:
         threadsExecutadas.append(idThread)
-
-    escritores -= 1
 
 def leituraBloqueada(idThread):
     global escritores
@@ -79,16 +86,18 @@ def erro(t_id, tipoThread, codErro):
     elif(codErro == 4):
         print("Escrita bloqueada sem que haja leitores/escritores executando")
     elif(codErro == 5):
+        print("Valor lido do recurso diferente do esperado")
+    elif(codErro == 6):
         print("Inanicao")
 
     sys.exit()
 
 # Executa as linhas do arquivo
 for linha in arquivo:
-    linha
+    exec(linha)
 
-for i in range(0, nthreads):
+for i in range(0, nThreads):
     if i not in threadsExecutadas:
-        erro(i, 0, 5)
+        erro(i, 0, 6)
 
 print("\nExecucao finalizada sem erros!\n")
